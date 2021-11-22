@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 
-public class PeticionOrdenCompra extends InfoComprasUIA {
+public class PeticionOrdenCompra extends InfoComprasUIA
+{
     private int cantidad;
     private String unidad="";
     private String codigo="";
@@ -14,13 +15,12 @@ public class PeticionOrdenCompra extends InfoComprasUIA {
     @JsonCreator
     public PeticionOrdenCompra(@JsonProperty("id")int id, @JsonProperty("name")String name,
                                @JsonProperty("codigo")String codigo, @JsonProperty("unidad")String unidad,
-                               @JsonProperty("cantidad")int cantidad, String tipo)
+                               @JsonProperty("cantidad")int cantidad)
     {
         super(id, name);
         this.cantidad = cantidad;
         this.unidad = unidad;
         this.codigo = codigo;
-        this.setType(tipo);
     }
 
     public int getCantidad() {
@@ -61,7 +61,7 @@ public class PeticionOrdenCompra extends InfoComprasUIA {
             if(miNodo.getPedidoProveedor() > 0)
             {
                 nodo = new PeticionOrdenCompra(miNodo.getId(), miNodo.getName(), miNodo.getDescripcion(),
-                        "PZA", miNodo.getPedidoProveedor(), "itemsOPC");
+                        "PZA", miNodo.getPedidoProveedor());
                 if(this.getItems() == null)
                 {
                     miLista = new ArrayList<InfoComprasUIA>();

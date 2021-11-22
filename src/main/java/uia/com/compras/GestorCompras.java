@@ -23,18 +23,17 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class GestorCompras {
 	private int opcion;
-	//private ListaKClientes miReportname = "Cartucho Tóner"eNS;
     private ListaReportesNivelStock miReporteNS;
     private PeticionOrdenCompra miPeticionOC = new PeticionOrdenCompra();
-    private hazSolicitudOrdenCompra miSolCompra = new hazSolicitudOrdenCompra();
+    private PeticionOrdenCompra miSolicituOC;
+    private Comprador miComprador = new Comprador();
 
-	public GestorCompras() 
-	{
+	public GestorCompras() throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         
         try {
             mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-            miSolCompra = mapper.readValue(new FileInputStream("C:\\Users\\LENOVO\\Desktop\\Nueva carpeta\\ComprasProy\\arregloItemsV1.json"), hazSolicitudOrdenCompra.class );
+			miReporteNS = mapper.readValue(new FileInputStream("C:\\TSU-2022\\ComprasProy\\arregloItemsV1.json"), ListaReportesNivelStock.class );
             
         }
         catch (JsonParseException e) {
@@ -52,7 +51,7 @@ public class GestorCompras {
 
         if (miReporteNS != null)
         {
-            miSolCompra.cotizacion_viable(miReporteNS);
+            miPeticionOC.agregaItems(miReporteNS);
 
             System.out.println("----- Items List -----");
 
@@ -61,22 +60,17 @@ public class GestorCompras {
                 miNodo.print();
             }
 
+            miComprador.hazSolicitudOrdenCompra(miPeticionOC);
+        }
 
-            try {
-                mapper.writeValue(new FileOutputStream("C:\\Users\\LENOVO\\Desktop\\Nueva carpeta\\ComprasProy\\arregloItemsV1.json"), miPeticionOC);
-            }
-            catch (JsonParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (JsonMappingException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
+        miSolicituOC=miComprador.buscaVendedor(miPeticionOC);
+        miComprador.agrupaVendedores(miSolicituOC);
+
+        for (Entry<Integer, HashMap<Integer, ArrayList<InfoComprasUIA>>> item : miComprador.getVendedores().entrySet())
+        {
+            int iVendedor = item.getKey();
+             HashMap<Integer, ArrayList<InfoComprasUIA>> nodo = item.getValue();
+             mapper.writeValue(new File("C:/TSU-2022/ComprasProy/SolicitudOrdenCompra-Vendedor-"+iVendedor+".json"), nodo);
         }
 
 	}
